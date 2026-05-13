@@ -7,39 +7,67 @@ AI-powered motorcycle helmet violation detection system using YOLOv8.
 - Tanapoom Srikaewkheaw
 
 ## Project Overview
-HelmTrack detects motorcycle riders without helmets from CCTV footage using YOLOv8 object detection, and logs violation records with license plate information via OCR.
+HelmTrack detects motorcycle riders without helmets from traffic images using YOLOv8 object detection. The system identifies 4 classes: Helmet, NoHelmet, Motorbike, and PNumber (license plate). A FastAPI backend serves the model and a Streamlit UI allows users to upload images and receive instant violation decisions.
 
 ## Repository Structure
 ```
 HelmTrack/
-├── notebooks/          # Jupyter notebooks for POC (Parts B1-B6)
-├── api/                # FastAPI model serving (Part B7)
-├── model/              # Trained model weights
-├── data/sample/        # Sample images for testing
-└── mlflow_screenshots/ # MLflow experiment comparison screenshots
+├── notebooks/              # Jupyter notebooks (B1-B6)
+├── api/                    # FastAPI model serving (B7)
+├── app.py                  # Streamlit UI
+├── model/                  # Trained model weights 
+├── mlflow_screenshots/     # MLflow experiment comparison screenshots
+├── .env.example            # Environment variable template
+└── requirements.txt        # Python dependencies
 ```
 
 ## Setup
+
+1. Clone the repo and install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+> Note: torch and torchvision require the CUDA build for GPU support:
+> ```bash
+> pip install torch==2.6.0+cu124 torchvision==0.21.0+cu124 --index-url https://download.pytorch.org/whl/cu124
+> ```
 
-## Dataset
-Downloaded from Roboflow Universe — helmet detection dataset in YOLOv8 format.
-Place dataset in `data/` after downloading.
+2. Copy `.env.example` to `.env` and fill in your Roboflow API key:
+```bash
+cp .env.example .env
+```
+
+3. Download the dataset by running `notebooks/data_exploration.ipynb` (requires Roboflow API key in `.env`)
+   - Dataset is hosted at: https://app.roboflow.com/peerapat-seenoi/helmet-detection-nsbwm-luu1f/1
+   - You need a Roboflow account and access to the project to download
+
+4. Obtain model weights:
+   - `model/best.pt` is not included in the repo due to file size
+   - Run `notebooks/model_training.ipynb` to retrain from scratch
 
 ## Running the API
 ```bash
 uvicorn api.main:app --reload
 ```
-Then go to `http://localhost:8000/docs` to test the API.
+API docs available at `http://localhost:8000/docs`
+
+## Running the UI
+```bash
+streamlit run app.py
+```
+Open `http://localhost:8501` — requires the API to be running first.
+
+## Model
+- Architecture: YOLOv8s (small)
+- Dataset: 1,078 train / 308 valid / 154 test images
+- Classes: Helmet, NoHelmet, Motorbike, PNumber
+- Best run: run3_yolov8s_30ep — mAP@50 = 0.8362
 
 ## Notebooks
 | Notebook | Description |
 |---|---|
-| B1_data_exploration | Dataset overview, class distribution, sample images |
-| B2_model_training | YOLOv8 fine-tuning, confusion matrix, metrics + MLflow tracking (3 runs) |
-| B3_fairness_analysis | Per-class fairness metrics |
-| B5_explainability | GradCAM feature visualization |
-| B6_prediction_reasoning | Per-prediction explanation with GradCAM |
-
+| data_exploration | Dataset download, class distribution, sample images |
+| model_training | 3 YOLOv8 training runs with MLflow tracking, confusion matrix, best model selection |
+| fairness_analysis | Per-class precision, recall, mAP fairness gap analysis |
+| explainability | Model detections and confidence score distribution on test images |
+| per_prediction_reasoning | Human-readable reasoning string for every bounding box prediction |
