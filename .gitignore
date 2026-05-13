@@ -20,6 +20,10 @@ env/
 .env
 .venv
 
+# API keys
+roboflow.env
+api_key.txt
+
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb_checkpoints
