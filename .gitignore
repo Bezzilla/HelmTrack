@@ -39,6 +39,8 @@ data/*/labels/
 
 # Model weights (too large for git)
 model/*.pt
+notebooks/*.pt
+*.pt
 model/*.pth
 model/*.pkl
 model/*.onnx
