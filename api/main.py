@@ -2,11 +2,13 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
 from ultralytics import YOLO
 from PIL import Image
+from pathlib import Path
 import io
 
 app = FastAPI(title="HelmTrack API", description="Helmet violation detection API")
 
-model = YOLO("../model/best.pt")
+MODEL_PATH = Path(__file__).parent.parent / "model" / "best.pt"
+model = YOLO(str(MODEL_PATH))
 
 @app.get("/")
 def root():
@@ -28,7 +30,7 @@ async def predict(file: UploadFile = File(...)):
                 "bbox": box.xyxy[0].tolist()
             })
 
-    violation = any(d["class"] == "no_helmet" for d in detections)
+    violation = any(d["class"] == "NoHelmet" for d in detections)
 
     return JSONResponse({
         "violation_detected": violation,
