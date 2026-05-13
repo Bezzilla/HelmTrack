@@ -1,9 +1,7 @@
 # Core ML
 ultralytics==8.4.49
-# torch and torchvision require CUDA build - install separately:
-# pip install torch==2.6.0+cu124 torchvision==0.21.0+cu124 --index-url https://download.pytorch.org/whl/cu124
-torch==2.6.0+cu124
-torchvision==0.21.0+cu124
+# Install torch and torchvision manually from https://pytorch.org/get-started/locally/
+# Choose your CUDA version or CPU-only build before running pip install -r requirements.txt
 
 # Data & Notebooks
 numpy==2.4.4

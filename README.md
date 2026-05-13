@@ -23,14 +23,12 @@ HelmTrack/
 
 ## Setup
 
-1. Clone the repo and install dependencies:
+1. Install PyTorch first from https://pytorch.org/get-started/locally/ (choose your CUDA version or CPU-only)
+
+2. Install remaining dependencies:
 ```bash
 pip install -r requirements.txt
 ```
-> Note: torch and torchvision require the CUDA build for GPU support:
-> ```bash
-> pip install torch==2.6.0+cu124 torchvision==0.21.0+cu124 --index-url https://download.pytorch.org/whl/cu124
-> ```
 
 2. Copy `.env.example` to `.env` and fill in your Roboflow API key:
 ```bash
