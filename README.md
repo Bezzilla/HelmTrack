@@ -3,8 +3,8 @@
 AI-powered motorcycle helmet violation detection system using YOLOv8.
 
 ## Team
-- Peerapat Seenoi
-- Tanapoom Srikaewkheaw
+- **Tanapoom Srikaewkheaw** : System design, UI/UX design, API interface design
+- **Peerapat Seenoi** : Data collection, model training, MLflow experiment tracking, model evaluation, API deployment
 
 ## Project Overview
 HelmTrack detects motorcycle riders without helmets from traffic images using YOLOv8 object detection. The system identifies 4 classes: Helmet, NoHelmet, Motorbike, and PNumber (license plate). A FastAPI backend serves the model and a Streamlit UI provides a proof-of-concept interface for uploading images and receiving instant violation decisions.
