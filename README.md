@@ -7,15 +7,38 @@ AI-powered motorcycle helmet violation detection system using YOLOv8.
 - Tanapoom Srikaewkheaw
 
 ## Project Overview
-HelmTrack detects motorcycle riders without helmets from traffic images using YOLOv8 object detection. The system identifies 4 classes: Helmet, NoHelmet, Motorbike, and PNumber (license plate). A FastAPI backend serves the model and a Streamlit UI allows users to upload images and receive instant violation decisions.
+HelmTrack detects motorcycle riders without helmets from traffic images using YOLOv8 object detection. The system identifies 4 classes: Helmet, NoHelmet, Motorbike, and PNumber (license plate). A FastAPI backend serves the model and a Streamlit UI provides a proof-of-concept interface for uploading images and receiving instant violation decisions.
+
+## Grading Guide
+
+| Task | File / Location |
+|---|---|
+| B1: Data Exploration | `notebooks/data_exploration.ipynb` |
+| B2: Model Training | `notebooks/model_training.ipynb` |
+| B3: Fairness Analysis | `notebooks/fairness_analysis.ipynb` |
+| B4: MLflow Screenshots | `mlflow_screenshots/` |
+| B5: Model Explainability | `notebooks/explainability.ipynb` |
+| B6: Prediction Reasoning | `notebooks/per_prediction_reasoning.ipynb` |
+| B7: Model Deployment | `notebooks/api_documentation.ipynb` + `api/main.py` |
+| Model Artifact | `model/best.pt` |
+| UI (Part C) | `app.py` (Streamlit) |
+| API (Part C) | `api/main.py` (FastAPI) |
 
 ## Repository Structure
 ```
 HelmTrack/
-├── notebooks/              # Jupyter notebooks (B1-B6)
-├── api/                    # FastAPI model serving (B7)
+├── notebooks/              # Jupyter notebooks (B1-B7)
+│   ├── data_exploration.ipynb
+│   ├── model_training.ipynb
+│   ├── fairness_analysis.ipynb
+│   ├── explainability.ipynb
+│   ├── per_prediction_reasoning.ipynb
+│   └── api_documentation.ipynb
+├── api/                    # FastAPI model serving
+│   └── main.py
 ├── app.py                  # Streamlit UI
-├── model/                  # Trained model weights 
+├── model/                  # Trained model weights
+│   └── best.pt
 ├── mlflow_screenshots/     # MLflow experiment comparison screenshots
 ├── .env.example            # Environment variable template
 └── requirements.txt        # Python dependencies
@@ -30,18 +53,13 @@ HelmTrack/
 pip install -r requirements.txt
 ```
 
-2. Copy `.env.example` to `.env` and fill in your Roboflow API key:
+3. Copy `.env.example` to `.env` and fill in your Roboflow API key:
 ```bash
 cp .env.example .env
 ```
 
-3. Download the dataset by running `notebooks/data_exploration.ipynb` (requires Roboflow API key in `.env`)
+4. Download the dataset by running `notebooks/data_exploration.ipynb` (requires Roboflow API key in `.env`)
    - Dataset is hosted at: https://app.roboflow.com/peerapat-seenoi/helmet-detection-nsbwm-luu1f/1
-   - You need a Roboflow account and access to the project to download
-
-4. Obtain model weights:
-   - `model/best.pt` is not included in the repo due to file size
-   - Run `notebooks/model_training.ipynb` to retrain from scratch
 
 ## Running the API
 ```bash
@@ -60,12 +78,15 @@ Open `http://localhost:8501` — requires the API to be running first.
 - Dataset: 1,078 train / 308 valid / 154 test images
 - Classes: Helmet, NoHelmet, Motorbike, PNumber
 - Best run: run3_yolov8s_30ep — mAP@50 = 0.8362
+- Model artifact: `model/best.pt`
 
 ## Notebooks
-| Notebook | Description |
-|---|---|
-| data_exploration | Dataset download, class distribution, sample images |
-| model_training | 3 YOLOv8 training runs with MLflow tracking, confusion matrix, best model selection |
-| fairness_analysis | Per-class precision, recall, mAP fairness gap analysis |
-| explainability | Model detections and confidence score distribution on test images |
-| per_prediction_reasoning | Human-readable reasoning string for every bounding box prediction |
+
+| Notebook | Task | Description |
+|---|---|---|
+| data_exploration | B1 | Dataset download, class distribution, sample images |
+| model_training | B2 | 3 YOLOv8 training runs with MLflow tracking, confusion matrix, best model selection |
+| fairness_analysis | B3 | Per-class precision, recall, mAP fairness gap analysis |
+| explainability | B5 | Model detections and confidence score distribution on test images |
+| per_prediction_reasoning | B6 | Human-readable reasoning string for every bounding box prediction |
+| api_documentation | B7 | API contract, 3 test scenarios, scalability considerations |

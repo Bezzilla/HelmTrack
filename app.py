@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import io
+from collections import Counter
 
 API_URL = "http://127.0.0.1:8000/predict"
 
@@ -15,10 +16,10 @@ COLOR_MAP = {
 }
 
 REASON_MAP = {
-    "Helmet":    "Rider is wearing a helmetno violation.",
-    "NoHelmet":  "Rider has NO helmetVIOLATION flagged.",
-    "Motorbike": "Motorcycle detectedused to associate rider.",
-    "PNumber":   "License plate detectedcandidate for OCR.",
+    "Helmet":    "Rider is wearing a helmet — no violation.",
+    "NoHelmet":  "Rider has NO helmet — VIOLATION flagged.",
+    "Motorbike": "Motorcycle detected — used to associate rider.",
+    "PNumber":   "License plate detected — candidate for OCR.",
 }
 
 st.set_page_config(page_title="HelmTrack", layout="wide")
@@ -44,7 +45,7 @@ if uploaded:
             resp.raise_for_status()
             data = resp.json()
         except requests.exceptions.ConnectionError:
-            st.error("Cannot reach API at http://127.0.0.1:8000make sure uvicorn is running.")
+            st.error("Cannot reach API at http://127.0.0.1:8000 — make sure uvicorn is running.")
             st.stop()
         except Exception as e:
             st.error(f"API error: {e}")
@@ -74,33 +75,35 @@ if uploaded:
 
     # Violation banner
     st.markdown("---")
-    if violation:
-        st.error("## VIOLATION DETECTEDRider without helmet identified")
+    if not detections:
+        st.info("No objects detected in this image. Try a clearer traffic photo.")
+    elif violation:
+        st.error("## VIOLATION DETECTED — Rider without helmet identified")
     else:
-        st.success("## CLEARNo helmet violation detected")
+        st.success("## CLEAR — No helmet violation detected")
 
     # Detection table
-    st.subheader("Detection Details")
-    for d in detections:
-        cls  = d["class"]
-        conf = d["confidence"]
-        conf_label = "high" if conf >= 0.75 else ("medium" if conf >= 0.5 else "low")
-        reason = REASON_MAP.get(cls, "Unknown class.")
-        color_hex = {
-            "Helmet": "#00c800", "NoHelmet": "#dc0000",
-            "Motorbike": "#ffa500", "PNumber": "#b400dc"
-        }.get(cls, "#888888")
+    if detections:
+        st.subheader("Detection Details")
+        for d in detections:
+            cls  = d["class"]
+            conf = d["confidence"]
+            conf_label = "high" if conf >= 0.75 else ("medium" if conf >= 0.5 else "low")
+            reason = REASON_MAP.get(cls, "Unknown class.")
+            color_hex = {
+                "Helmet": "#00c800", "NoHelmet": "#dc0000",
+                "Motorbike": "#ffa500", "PNumber": "#b400dc"
+            }.get(cls, "#888888")
 
-        col_a, col_b, col_c = st.columns([1, 1, 4])
-        col_a.markdown(f"**:{color_hex}[{cls}]**")
-        col_b.markdown(f"`{conf:.2f}` ({conf_label})")
-        col_c.markdown(reason)
+            col_a, col_b, col_c = st.columns([1, 1, 4])
+            col_a.markdown(f"**:{color_hex}[{cls}]**")
+            col_b.markdown(f"`{conf:.2f}` ({conf_label})")
+            col_c.markdown(reason)
 
-    # Summary counts
-    st.markdown("---")
-    st.subheader("Summary")
-    from collections import Counter
-    counts = Counter(d["class"] for d in detections)
-    cols = st.columns(len(counts))
-    for i, (cls, cnt) in enumerate(counts.items()):
-        cols[i].metric(cls, cnt)
+        # Summary counts
+        st.markdown("---")
+        st.subheader("Summary")
+        counts = Counter(d["class"] for d in detections)
+        cols = st.columns(len(counts))
+        for i, (cls, cnt) in enumerate(counts.items()):
+            cols[i].metric(cls, cnt)
